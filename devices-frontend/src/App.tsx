@@ -5,9 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import { Button, TextField } from '@mui/material';
 
-import './App.css';
 import { errorNotification, successNotification } from './toasts';
-import { error } from 'console';
 
 type FormData = {
   devicesQuantity: string;

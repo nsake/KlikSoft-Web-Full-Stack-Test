@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { io } from 'socket.io-client';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,36 +14,12 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
-import './App.css';
+import { IGraphData } from './infrastructure/interfaces/data.interfaces';
+import { options } from './infrastructure/config/graph.config';
 
 const BASE_URL = 'http://localhost:3000';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-
-export const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      position: 'top' as const,
-    },
-    title: {
-      display: true,
-      text: 'Devices Chart',
-    },
-  },
-} as any;
-
-interface IDataset {
-  label: string;
-  data: number[];
-  color: string;
-}
-
-interface IGraphData {
-  labels: Array<string>;
-  datasets: Array<IDataset>;
-}
 
 function App() {
   const [graphData, setGraphData] = useState<IGraphData>();
@@ -58,7 +33,6 @@ function App() {
 
     socket.on('update', async (data: IGraphData) => setGraphData(data));
 
-    // Clean up the socket connection on unmount
     return () => {
       socket.disconnect();
     };
@@ -78,10 +52,8 @@ function App() {
   }, [graphData]);
 
   return (
-    <div className="App">
-      <div
-        style={{ width: '80vw', height: 'calc(100vh - 40px)', margin: '0 auto', padding: '20px' }}
-      >
+    <div className="app">
+      <div className="app__graph-container">
         {data ? <Line options={options} data={data} /> : 'No Data Yet'}
       </div>
       <ToastContainer theme="dark" />

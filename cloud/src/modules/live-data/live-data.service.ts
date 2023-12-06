@@ -53,8 +53,6 @@ export class LiveDataService {
         {
           const alreadyExistsLabels = this.state.labels.length;
 
-          console.log('alreadyExistsLabels', alreadyExistsLabels);
-
           const maxTenElementNewArray = getArrayWithLimitedLength<number>({
             length: 10,
             firstElement: data,
@@ -78,8 +76,6 @@ export class LiveDataService {
         datasets: Object.values(this.state.datasets),
       });
     } catch (err) {
-      console.log(err);
-
       return new InternalServerErrorException(
         'Received unexpectable error on updating state error',
       );

@@ -64,6 +64,7 @@ export class DevicesService {
     }
   }
 
+  //! Move external cron operations to separated module
   public createIntervalJob(name: string, frequency: number, callback: () => void) {
     const isIntervalExists = this.schedulerRegistry.doesExist('interval', name);
 
