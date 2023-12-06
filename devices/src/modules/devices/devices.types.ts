@@ -1,1 +1,1 @@
-export type TDeviceSettings = { devicesQuantity: number; frequency: string };
+export type TDeviceSettings = { devicesQuantity: number; frequency: number };

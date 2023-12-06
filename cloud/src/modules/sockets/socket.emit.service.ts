@@ -8,7 +8,7 @@ export class SocketEmitService {
 
   public sendToRoom(roomName: string, event: string, data: unknown): boolean {
     console.log('Send Request to Room', { roomName, event, data });
-    console.log('Described data', (data as any).dataset);
+    console.log('Described data', (data as any).datasets);
 
     return this.server.to(roomName).emit(event, data);
   }

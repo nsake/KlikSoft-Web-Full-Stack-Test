@@ -1,11 +1,14 @@
-import { IsNotEmpty, IsNumber, IsNumberString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class SetDeviceSettingsDto {
   @IsNotEmpty()
+  @Transform(({ value }) => Number(value))
   @IsNumber()
   devicesQuantity: number;
 
   @IsNotEmpty()
-  @IsNumberString()
-  frequency: string;
+  @Transform(({ value }) => Number(value))
+  @IsNumber()
+  frequency: number;
 }

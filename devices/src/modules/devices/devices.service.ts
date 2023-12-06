@@ -41,32 +41,30 @@ export class DevicesService {
     }
   }
 
-  private sendDevicesData() {
-    const devices = this.devices;
-
-    const body = {
-      devicesData: devices.map((device) => ({
-        ...device,
-        data: Math.round(Math.random() * 10),
-      })),
-    };
-
-    console.log('body', body);
-
-    const link = `http://localhost:3000/live-data`;
-
-    const options = {
-      method: 'post',
-    };
-
+  private async sendDevicesData() {
     try {
-      axios.post(link, body, options);
+      const devices = this.devices;
+
+      const body = {
+        devicesData: devices.map((device) => ({
+          ...device,
+          data: Math.round(Math.random() * 10),
+        })),
+      };
+
+      const link = `http://localhost:3000/live-data`;
+
+      const options = {
+        method: 'post',
+      };
+
+      const res = await axios.post(link, body, options);
     } catch (err) {
       console.log('Error on request');
     }
   }
 
-  public createIntervalJob(name: string, frequency: string, callback: () => void) {
+  public createIntervalJob(name: string, frequency: number, callback: () => void) {
     const isIntervalExists = this.schedulerRegistry.doesExist('interval', name);
 
     if (isIntervalExists) {
@@ -77,7 +75,7 @@ export class DevicesService {
       this.deleteInterval(name);
     }
 
-    const ms = Number(frequency) * 1000;
+    const ms = frequency * 1000;
 
     this.addInterval(name, ms, callback);
   }
