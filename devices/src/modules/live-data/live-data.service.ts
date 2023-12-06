@@ -1,7 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { getArrayWithLimitedLength } from 'src/infrastructure/utils/get-limited-array';
 import { SocketEmitService } from '../sockets/socket.emit.service';
 
+interface IDataset {
+  label: string;
+  data: number[];
+}
 @Injectable()
 export class LiveDataService {
   constructor(private socketEmitService: SocketEmitService) {}
@@ -9,7 +13,9 @@ export class LiveDataService {
   // Each array max 10 elements length
   private state = {
     labels: getArrayWithLimitedLength(10),
-    dataset: new Map<string, { label: string; data: Array<number> }>(),
+    dataset: {} as IDataset,
+    // i would like to use new Map instead of object,
+    // but it can not be converted via JSON, so i decided to use plain object
   };
 
   //? For example
@@ -18,35 +24,41 @@ export class LiveDataService {
   //? we dropping "oldest" one data.
 
   public updateState(devicesData: Array<{ id: string; name: string; data: number }>) {
-    const receivedStateTime = new Date();
+    try {
+      this.state.labels.push(new Date());
 
-    this.state.labels.push(receivedStateTime);
+      devicesData.map((deviceData) => {
+        const { id, name: label, data } = deviceData;
 
-    devicesData.map((deviceData) => {
-      const { id, name: label, data } = deviceData;
+        const deviceState = this.state.dataset[id];
 
-      // Update state if such device exists
-      if (this.state.dataset.has(id)) {
-        const currentDeviceDataState = this.state.dataset.get(id);
+        // Update state if such device exists
+        if (deviceState) {
+          deviceState.data.push(data);
 
-        currentDeviceDataState.data.push(data);
+          this.state.dataset[id] = deviceState;
 
-        this.state.dataset.set(id, currentDeviceDataState);
+          return;
+        }
 
-        return;
-      }
+        // Create new one record if there is no such device
+        {
+          const maxTenElementNewArray = getArrayWithLimitedLength<number>(10, data);
 
-      // Create new one record if there is no such device
-      {
-        const maxTenElementNewArray = getArrayWithLimitedLength<number>(10, data);
-
-        this.state.dataset.set(id, {
-          label,
-          data: maxTenElementNewArray,
-        });
-      }
+          this.state.dataset[id] = {
+            label,
+            data: maxTenElementNewArray,
+          };
+        }
+      });
 
       this.socketEmitService.sendToRoom('graph-update', 'update', this.state);
-    });
+    } catch (err) {
+      console.log(err);
+
+      return new InternalServerErrorException(
+        'Received unexpectable error on updating state error',
+      );
+    }
   }
 }

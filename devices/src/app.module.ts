@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { SocketModule } from './modules/sockets/socket.module';
+import { LiveDataModule } from './modules/live-data/live-data.module';
 
 @Module({
   imports: [
@@ -14,6 +15,8 @@ import { SocketModule } from './modules/sockets/socket.module';
     }),
 
     SocketModule,
+
+    LiveDataModule,
   ],
 })
 export class AppModule {}
