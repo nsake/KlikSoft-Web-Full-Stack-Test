@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { SocketModule } from './modules/helpers/sockets/socket.module';
+import { SocketModule } from './modules/sockets/socket.module';
 
 @Module({
   imports: [
